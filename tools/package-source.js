@@ -1571,6 +1571,18 @@ _.extend(PackageSource.prototype, {
         });
         sources.sort(loadOrderSort(templateExtensions));
 
+        // Filter out `*.client.*`, and `*.server.*` filenames from relevent arch
+        sources = _.filter(sources, function (relPath) {
+          var filename = relPath.split('/').pop();
+          if (archinfo.matches(arch, "os") && filename.match(/\.client\./)) {
+            return false;
+          } else if (archinfo.matches(arch, "web") && filename.match(/\.server\./)) {
+            return false;
+          } else {
+            return true;
+          };
+        });
+
         // Convert into relPath/fileOptions objects.
         sources = _.map(sources, function (relPath) {
           var sourceObj = {relPath: relPath};
